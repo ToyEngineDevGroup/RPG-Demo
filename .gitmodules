@@ -1,0 +1,4 @@
+[submodule "Toy2D"]
+	path = Toy2D
+	url = https://github.com/ToyEngineDevGroup/Toy2D.git
+	branch = dev
