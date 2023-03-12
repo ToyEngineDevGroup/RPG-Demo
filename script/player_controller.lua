@@ -29,6 +29,37 @@ function PlayerController:movePlayerShadow()
         self.parent:GetTransform().translation - Vector3:new(0.01, 0.17, 0)
 end
 
+function PlayerController:generateHitBox()
+    self.parent:GetParentScene():CreateEntity("player_hitbox")
+    self.parent:GetParentScene():GetEntityByName("player_hitbox"):AddRigidbody2D()
+    self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D().type = BodyType.Static
+    self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D().is_fixed_rotation = true
+
+    local offset = nil
+
+    if self.curr_anime == "AttackUp" then
+        offset = Vector3:new(0.0, -0.4, 0.0)
+        self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D():CreateBox(0.4, 0.3)
+    elseif self.curr_anime == "AttackDown" then
+        offset = Vector3:new(0.0, 0.4, 0.0)
+        self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D():CreateBox(0.4, 0.3)
+    elseif self.curr_anime == "AttackLeft" then
+        offset = Vector3:new(0.4, 0.0, 0.0)
+        self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D():CreateBox(0.3, 0.4)
+    elseif self.curr_anime == "AttackRight" then
+        offset = Vector3:new(-0.4, 0.0, 0.0)
+        self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetRigidbody2D():CreateBox(0.3, 0.4)
+        self.curr_anime = "AttackRight"
+    end
+
+    self.parent:GetParentScene():GetEntityByName("player_hitbox"):GetTransform().translation =
+        self.parent:GetTransform().translation - offset
+end
+
+function PlayerController:destroyHitBox()
+    -- self.parent:GetParentScene():DestroyEntity(self.parent:GetParentScene():GetEntityByName("player_hitbox"))
+end
+
 function PlayerController:onUpdate(timestep)
     self:movePlayerShadow()
     self.parent:GetRigidbody2D().linear_velocity = Vector2:new(0, 0)
@@ -69,8 +100,8 @@ function PlayerController:onUpdate(timestep)
             elseif self.curr_anime == "RunRight" then
                 self.curr_anime = "AttackRight"
             end
+            -- self:generateHitBox()
         end
-        self.parent:GetRigidbody2D().linear_velocity = self.parent:GetRigidbody2D().old_linear_velocity
     end
 
     self.elapsed_time = self.elapsed_time + timestep
@@ -98,6 +129,7 @@ function PlayerController:onUpdate(timestep)
                     self.last_anime = "AttackRight"
                     self.curr_anime = "RunRight"
                 end
+                self:destroyHitBox()
             end
         end
         self.elapsed_time = self.elapsed_time - 0.1
