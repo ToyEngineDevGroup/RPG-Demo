@@ -16,6 +16,8 @@ void GameLayer::onAttach() {
         Toy2D::Application::get().getWindow()->getWidth(),
         Toy2D::Application::get().getWindow()->getHeight());
 
+    m_world.getActiveScene()->setGravity({0.0f, 0.0f});
+
     auto&& ground = m_world.getActiveScene()->createEntity("ground");
     ground.addComponent<Toy2D::SpriteComponent>().tex_index =
         Toy2D::Application::get().getResourceMngr()->index<Toy2D::ResourceType::Texture>("ground");
